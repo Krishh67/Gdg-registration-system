@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>GDG Event Registration</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="register.css" />
+</head>
+<body>
+	<main class="wrap">
+		<header class="bar">
+			<a class="back" href="index.html" aria-label="Back to landing">← Back</a>
+			<h1>GDG Event Registration</h1>
+		</header>
+
+		<section class="card">
+			<h2>Register Now</h2>
+			<form id="reg-form" novalidate>
+				<div class="field">
+					<label for="name">Name</label>
+					<input type="text" id="name" name="name" autocomplete="name" required minlength="2" maxlength="80" />
+					<small class="error" id="err-name"></small>
+				</div>
+				<div class="field">
+					<label for="email">Email</label>
+					<input type="email" id="email" name="email" autocomplete="email" required />
+					<small class="error" id="err-email"></small>
+				</div>
+				<div class="field">
+					<label for="phone">Phone</label>
+					<input type="tel" id="phone" name="phone" inputmode="tel" placeholder="e.g. +1 555 123 4567" required />
+					<small class="error" id="err-phone"></small>
+				</div>
+				<div class="actions">
+					<button type="submit" class="primary">Submit</button>
+					<button type="reset" class="ghost">Reset</button>
+				</div>
+				<div class="note" role="status" aria-live="polite" id="form-status"></div>
+			</form>
+		</section>
+
+		<section class="card">
+			<div class="list-head">
+				<h2>Registrations</h2>
+				<div class="tools">
+					<button id="export-json">Export JSON</button>
+					<button id="export-csv">Export CSV</button>
+					<button id="clear-all" class="danger">Clear All</button>
+				</div>
+			</div>
+			<div class="table-wrap">
+				<table id="reg-table" aria-describedby="Registrations table">
+					<thead>
+						<tr>
+							<th>#</th>
+							<th>Name</th>
+							<th>Email</th>
+							<th>Phone</th>
+							<th>Actions</th>
+						</tr>
+					</thead>
+					<tbody></tbody>
+				</table>
+			</div>
+		</section>
+
+		<footer class="foot">Built with ❤️ for GDG</footer>
+	</main>
+	<script src="register.js"></script>
+</body>
+</html> 

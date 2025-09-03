@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Register for TechTalk Seminar | GDG</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}" />
+</head>
+<body>
+	<main class="wrap">
+		<header class="bar">
+			<a class="back" href="{{ url_for('events') }}" aria-label="Back to events">← Back to Events</a>
+			<h1>Register for TechTalk Seminar</h1>
+		</header>
+
+		<section class="event-info">
+			<div class="event-header">
+				<div class="event-icon">🎤</div>
+				<div class="event-details">
+					<h2>TechTalk Seminar</h2>
+					<p class="event-meta">December 15, 2024 • 2:00 PM - 5:00 PM • GDG Innovation Center</p>
+				</div>
+			</div>
+		</section>
+
+		<section class="card">
+			<h2>Registration Form</h2>
+			<form id="reg-form" novalidate>
+				<div class="field">
+					<label for="name">Full Name *</label>
+					<input type="text" id="name" name="name" autocomplete="name" required minlength="2" maxlength="80" placeholder="Enter your full name" />
+					<small class="error" id="err-name"></small>
+				</div>
+				
+				<div class="field">
+					<label for="email">Email Address *</label>
+					<input type="email" id="email" name="email" autocomplete="email" required placeholder="Enter your email address" />
+					<small class="error" id="err-email"></small>
+				</div>
+				
+				<div class="field">
+					<label for="phone">Phone Number *</label>
+					<input type="tel" id="phone" name="phone" inputmode="tel" placeholder="e.g. +1 555 123 4567" required />
+					<small class="error" id="err-phone"></small>
+				</div>
+
+				<div class="field">
+					<label for="course">Course Name *</label>
+					<select id="course" name="course" required>
+						<option value="">Select your course</option>
+						<option value="btech-aids">B-Tech AIDS</option>
+						<option value="btech-ce">B-Tech CE</option>
+						<option value="mba-tech">MBA Tech</option>
+					</select>
+					<small class="error" id="err-course"></small>
+				</div>
+
+				<div class="field">
+					<label for="year">Current Year *</label>
+					<select id="year" name="year" required>
+						<option value="">Select your current year</option>
+						<option value="1">1st Year</option>
+						<option value="2">2nd Year</option>
+						<option value="3">3rd Year</option>
+						<option value="4">4th Year</option>
+						<option value="5">5th Year</option>
+					</select>
+					<small class="error" id="err-year"></small>
+				</div>
+
+
+
+				<div class="field">
+					<label for="interests">Areas of Interest</label>
+					<div class="checkbox-group">
+						<label class="checkbox-item">
+							<input type="checkbox" name="interests" value="ai-ml" />
+							<span class="checkmark"></span>
+							AI & Machine Learning
+						</label>
+						<label class="checkbox-item">
+							<input type="checkbox" name="interests" value="web-dev" />
+							<span class="checkmark"></span>
+							Web Development
+						</label>
+						<label class="checkbox-item">
+							<input type="checkbox" name="interests" value="mobile" />
+							<span class="checkmark"></span>
+							Mobile Development
+						</label>
+						<label class="checkbox-item">
+							<input type="checkbox" name="interests" value="cloud" />
+							<span class="checkmark"></span>
+							Cloud Computing
+						</label>
+						<label class="checkbox-item">
+							<input type="checkbox" name="interests" value="cybersecurity" />
+							<span class="checkmark"></span>
+							Cybersecurity
+						</label>
+					</div>
+				</div>
+
+				
+
+				<div class="field">
+					<label for="notes">Additional Notes</label>
+					<textarea id="notes" name="notes" rows="3" placeholder="Any special requirements or questions?"></textarea>
+				</div>
+
+				<div class="actions">
+					<button type="submit" class="primary">Complete Registration</button>
+					<button type="reset" class="ghost">Reset Form</button>
+				</div>
+				<div class="note" role="status" aria-live="polite" id="form-status"></div>
+			</form>
+		</section>
+
+		<footer class="foot">
+			<p>By registering, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></p>
+		</footer>
+	</main>
+
+	<script>
+		const form = document.getElementById('reg-form');
+
+		form.addEventListener('submit', async (e) => {
+			e.preventDefault();
+			clearErrors();
+			setStatus('');
+
+			const formData = new FormData(form);
+			const data = {
+				name: formData.get('name').trim(),
+				email: formData.get('email').trim(),
+				phone: formData.get('phone').trim(),
+				course: formData.get('course'),
+				year: formData.get('year'),
+				interests: Array.from(formData.getAll('interests')),
+				notes: formData.get('notes').trim(),
+				event_type: 'seminar',
+				event_name: 'TechTalk Seminar'
+			};
+
+			try {
+				const response = await fetch('/api/register', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify(data)
+				});
+
+				const result = await response.json();
+
+				if (result.success) {
+					setStatus('Registration successful! Redirecting...', true);
+					// Redirect to thank you page
+					setTimeout(() => {
+						window.location.href = '/thank-you';
+					}, 1500);
+				} else {
+					if (result.errors) {
+						Object.keys(result.errors).forEach(field => {
+							const errorEl = document.getElementById(`err-${field}`);
+							if (errorEl && result.errors[field]) {
+								errorEl.textContent = result.errors[field];
+							}
+						});
+					}
+					setStatus(result.message || 'Please correct the errors.', false);
+				}
+			} catch (error) {
+				setStatus('Network error. Please try again.', false);
+			}
+		});
+
+		function clearErrors() {
+			document.getElementById('err-name').textContent = '';
+			document.getElementById('err-email').textContent = '';
+			document.getElementById('err-phone').textContent = '';
+			document.getElementById('err-course').textContent = '';
+			document.getElementById('err-year').textContent = '';
+		}
+
+		function setStatus(message, ok = true) {
+			const el = document.getElementById('form-status');
+			el.textContent = message;
+			el.style.color = ok ? '#34a853' : '#ea4335';
+		}
+	</script>
+</body>
+</html> 

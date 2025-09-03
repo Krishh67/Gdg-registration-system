@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GDG — Google Developers Club</title>
+  <meta name="description" content="Google Developers Club — Crazy Landing">
+  <style>
+    :root{
+      --bg1:#0b0f1a;
+      --bg2:#0a0a23;
+      --card:#0f172a;
+      --fg:#e2e8f0;
+      --muted:#94a3b8;
+      --accent:#22d3ee;
+      --r:#ea4335; --g:#34a853; --b:#4285f4; --y:#fbbc05;
+      --glow: 0 0 40px rgba(34,211,238,.35), 0 0 80px rgba(66,133,244,.2);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
+      color:var(--fg);
+      background: radial-gradient(1200px 600px at 10% 10%, rgba(66,133,244,.2), transparent 60%),
+                  radial-gradient(1000px 800px at 80% 90%, rgba(234,67,53,.18), transparent 60%),
+                  linear-gradient(120deg, var(--bg1), var(--bg2));
+      overflow:hidden;
+    }
+    /* Particle canvas */
+    #stars{
+      position:fixed; inset:0; z-index:-2;
+      filter: drop-shadow(0 0 2px rgba(255,255,255,.8));
+    }
+    /* Blobs */
+    .blob{
+      position:fixed; border-radius:50%;
+      filter: blur(60px) saturate(140%);
+      opacity:.6; mix-blend-mode: screen; z-index:-1;
+      animation: float 16s ease-in-out infinite;
+    }
+    .blob.r{background: radial-gradient(var(--r), transparent 60%); width:32vmax; height:32vmax; top:-10vmax; left:-8vmax;}
+    .blob.g{background: radial-gradient(var(--g), transparent 60%); width:28vmax; height:28vmax; bottom:-8vmax; right:10vmax; animation-delay: -3s;}
+    .blob.b{background: radial-gradient(var(--b), transparent 60%); width:26vmax; height:26vmax; top:20vh; right:-10vmax; animation-delay: -6s;}
+    @keyframes float{
+      0%,100%{ transform: translateY(0) translateX(0) scale(1); }
+      50%{ transform: translateY(-30px) translateX(20px) scale(1.05); }
+    }
+
+    .wrap{
+      display:grid; place-items:center; height:100%; padding: clamp(16px, 2vw, 32px);
+    }
+    .hero{
+      max-width:1100px; width:100%;
+      background: rgba(15,23,42,.55);
+      border:1px solid rgba(148,163,184,.2);
+      padding:clamp(20px, 3vw, 40px);
+      border-radius:28px;
+      box-shadow: 0 20px 100px rgba(0,0,0,.45), var(--glow);
+      position:relative;
+      overflow:hidden;
+    }
+    /* Scanline shimmer */
+    .hero::after{
+      content:"";
+      position:absolute; inset:-200% -50% auto -50%; height:50%;
+      background: linear-gradient(180deg, transparent, rgba(255,255,255,.08), transparent);
+      transform: rotate(8deg);
+      animation: scan 8s linear infinite;
+    }
+    @keyframes scan{ 0%{top:-100%} 100%{top:150%} }
+
+    .row{ display:grid; grid-template-columns: 1.2fr 1fr; gap:clamp(16px, 4vw, 40px); align-items:center; }
+    @media (max-width: 900px){ .row{ grid-template-columns: 1fr; } }
+
+    .gdg-logo{
+      width:min(480px, 90%); aspect-ratio: 1.8/1; margin:auto;
+      filter: drop-shadow(0 20px 40px rgba(0,0,0,.5));
+      transform-style: preserve-3d;
+      perspective: 800px;
+      transition: transform .3s ease;
+    }
+    .gdg-logo:hover{ transform: rotateX(6deg) rotateY(-6deg) scale(1.02); }
+    .badge{
+      display:inline-flex; align-items:center; gap:10px;
+      background: rgba(34,211,238,.15);
+      border:1px solid rgba(34,211,238,.35);
+      border-radius:999px; padding:8px 14px; font-weight:600; letter-spacing:.4px;
+      box-shadow: inset 0 0 40px rgba(34,211,238,.12);
+    }
+    .glitch{
+      font-size: clamp(36px, 6vw, 82px);
+      font-weight: 800; line-height: 1;
+      letter-spacing: -1px;
+      position:relative;
+      text-shadow: 0 0 2px rgba(255,255,255,.2);
+    }
+    .glitch::before, .glitch::after{
+      content: attr(data-text);
+      position:absolute; inset:0;
+      clip-path: inset(0 0 0 0);
+    }
+    .glitch::before{ color: var(--r); transform: translate(2px, -1px); animation: g1 1.6s infinite linear alternate-reverse; opacity:.6}
+    .glitch::after{ color: var(--b); transform: translate(-2px, 1px); animation: g2 1.5s infinite linear alternate; opacity:.6}
+    @keyframes g1{ 0%{clip-path: inset(0 0 85% 0)} 20%{clip-path: inset(0 0 10% 0)} 40%{clip-path: inset(0 0 55% 0)} 60%{clip-path: inset(0 0 20% 0)} 80%{clip-path: inset(0 0 70% 0)} 100%{clip-path: inset(0 0 0 0)}}
+    @keyframes g2{ 0%{clip-path: inset(85% 0 0 0)} 20%{clip-path: inset(10% 0 0 0)} 40%{clip-path: inset(55% 0 0 0)} 60%{clip-path: inset(20% 0 0 0)} 80%{clip-path: inset(70% 0 0 0)} 100%{clip-path: inset(0 0 0 0)}}
+
+    .sub{
+      font-size: clamp(16px, 1.5vw, 20px);
+      color:var(--muted); margin-top:10px; max-width:65ch
+    }
+    .cta{
+      display:inline-grid; place-items:center;
+      margin-top:26px; padding:14px 22px; border-radius:16px;
+      background: conic-gradient(from 180deg at 50% 50%, var(--r), var(--y), var(--g), var(--b), var(--r));
+      background-size: 200% 200%; animation: roll 8s linear infinite;
+      color:#0a0a0a; font-weight: 800; letter-spacing:.5px; text-transform:uppercase;
+      outline:none; border:none; cursor:pointer; font-size:14px; position:relative;
+      box-shadow: 0 10px 40px rgba(66,133,244,.35), inset 0 0 20px rgba(255,255,255,.35);
+      text-decoration:none;
+    }
+    .cta span{ background: #fff; padding:12px 20px; border-radius:12px; }
+    .cta:active{ transform: translateY(1px) }
+    @keyframes roll{ 0%{background-position:0% 50%} 100%{background-position:200% 50%} }
+
+    .chips{display:flex; flex-wrap:wrap; gap:10px; margin-top:22px}
+    .chips .chip{
+      padding:8px 12px; border-radius:999px;
+      background: rgba(255,255,255,.06); border:1px solid rgba(148,163,184,.25);
+      backdrop-filter: blur(4px);
+    }
+
+    footer{
+      position:fixed; bottom:8px; width:100%; text-align:center; color:var(--muted); font-size:12px;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="stars"></canvas>
+  <div class="blob r"></div>
+  <div class="blob g"></div>
+  <div class="blob b"></div>
+
+  <div class="wrap">
+    <section class="hero">
+      <div class="row">
+        <div class="left">
+          <div class="badge">🚀 Google Developers Club • Be Unreasonably Curious</div>
+          <h1 class="glitch" data-text="Build. Launch. Repeat.">Build. Launch. Repeat.</h1>
+          <p class="sub">
+            Code with creators, ship wild ideas, and learn by doing. Talks, hacknights, lightning demos,
+            and pizza. Always pizza. Ready to go off the rails—in a good way?
+          </p>
+          <div class="chips">
+            <div class="chip">Web • Android • Cloud</div>
+            <div class="chip">ML/AI</div>
+            <div class="chip">Open Source</div>
+            <div class="chip">Design Systems</div>
+          </div>
+          <a class="cta" href="/events"><span>Get Started</span></a>
+        </div>
+        <div class="right" style="display:grid; place-items:center;">
+          <!-- Stylized GDG mark -->
+          <svg class="gdg-logo" viewBox="0 0 900 500" fill="none" aria-label="GDG Logo">
+            <defs>
+              <filter id="soft" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="6" result="b"/>
+                <feMerge>
+                  <feMergeNode in="b"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+            </defs>
+            <rect x="40" y="40" width="820" height="420" rx="28" fill="rgba(17,24,39,.65)" stroke="rgba(148,163,184,.25)"/>
+            <g filter="url(#soft)">
+              <path d="M180,120 L310,250 L180,380" stroke="#ea4335" stroke-width="48" stroke-linecap="round" />
+              <path d="M260,120 L390,250 L260,380" stroke="#fbbc05" stroke-width="48" stroke-linecap="round" />
+              <path d="M720,120 L590,250 L720,380" stroke="#34a853" stroke-width="48" stroke-linecap="round" />
+              <path d="M640,120 L510,250 L640,380" stroke="#4285f4" stroke-width="48" stroke-linecap="round" />
+            </g>
+            <text x="50%" y="86%" text-anchor="middle" fill="#e2e8f0" font-size="40" font-weight="800" style="letter-spacing:1px">Google Developers Club</text>
+          </svg>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <footer>© 2025 Google Developers Club (Campus). Crafted with ❤️ and a bit of chaos.</footer>
+
+  <script>
+    // simple stars/particles
+    const c = document.getElementById('stars');
+    const ctx = c.getContext('2d');
+    const DPR = Math.min(window.devicePixelRatio || 1, 2);
+    let w,h,stars;
+    function resize(){
+      w = c.width = innerWidth * DPR;
+      h = c.height = innerHeight * DPR;
+      c.style.width = innerWidth + 'px';
+      c.style.height = innerHeight + 'px';
+      stars = Array.from({length: 120}, () => ({
+        x: Math.random()*w, y: Math.random()*h, r: Math.random()*1.8+0.4, v: Math.random()*0.4+0.1
+      }));
+    }
+    function tick(t){
+      ctx.clearRect(0,0,w,h);
+      ctx.fillStyle = 'white';
+      for(const s of stars){
+        s.x += s.v; s.y -= s.v * 0.3;
+        if(s.x>w) s.x=0; if(s.y<0) s.y=h;
+        ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI*2); ctx.fill();
+      }
+      requestAnimationFrame(tick);
+    }
+    addEventListener('resize', resize); resize(); tick();
+  </script>
+</body>
+</html>

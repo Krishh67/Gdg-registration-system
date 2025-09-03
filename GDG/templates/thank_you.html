@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Registration Confirmed | GDG</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/thank_you.css') }}" />
+</head>
+<body>
+	<main class="wrap">
+		<div class="success-container">
+			<div class="success-icon">✅</div>
+			<h1>Registration Confirmed!</h1>
+			<p class="message">Thank you for registering for the <strong>TechTalk Seminar</strong></p>
+			
+			<div class="event-details">
+				<h2>Event Details</h2>
+				<div class="detail-grid">
+					<div class="detail-item">
+						<span class="icon">📅</span>
+						<div class="detail-content">
+							<strong>Date:</strong>
+							<span>December 15, 2024</span>
+						</div>
+					</div>
+					<div class="detail-item">
+						<span class="icon">⏰</span>
+						<div class="detail-content">
+							<strong>Time:</strong>
+							<span>2:00 PM - 5:00 PM</span>
+						</div>
+					</div>
+					<div class="detail-item">
+						<span class="icon">📍</span>
+						<div class="detail-content">
+							<strong>Venue:</strong>
+							<span>Auditorium 3rd floor</span>
+						</div>
+					</div>
+					<div class="detail-item">
+						<span class="icon">🎫</span>
+						<div class="detail-content">
+							<strong>Registration ID:</strong>
+							<span>{{ registration_id }}</span>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="next-steps">
+				<h2>What's Next?</h2>
+				<div class="steps">
+					<div class="step">
+						<div class="step-number">1</div>
+						<div class="step-content">
+							<h3>Check Your Email</h3>
+							<p>We've sent you a confirmation email with event details and your ticket.</p>
+						</div>
+					</div>
+					<div class="step">
+						<div class="step-number">2</div>
+						<div class="step-content">
+							<h3>Add to Calendar</h3>
+							<p>Save the event to your calendar so you don't miss it!</p>
+						</div>
+					</div>
+					<div class="step">
+						<div class="step-number">3</div>
+						<div class="step-content">
+							<h3>Join the Community</h3>
+							<p>Connect with other attendees and stay updated on GDG events.</p>
+							<a href="https://chat.whatsapp.com/L4DqRpnUTGIAvWKG7h6DHc" target="_blank" class="community-link">Join our WhatsApp Community →</a>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="actions">
+				<a href="{{ url_for('landing') }}" class="btn primary">Back to Home</a>
+				<a href="{{ url_for('events') }}" class="btn secondary">View More Events</a>
+			</div>
+
+			<div class="contact-info">
+				<p>Questions? Contact us at <a href="mailto:events@gdg.com">events@gdg.com</a></p>
+			</div>
+		</div>
+	</main>
+</body>
+</html> 

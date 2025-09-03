@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>GDG Admin - View Registrations</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}" />
+</head>
+<body>
+	<main class="wrap">
+		<header class="bar">
+			<a class="back" href="{{ url_for('landing') }}" aria-label="Back to home">← Back to Home</a>
+			<h1>GDG Admin Panel</h1>
+			<div class="stats">
+				<span class="stat-item">Total: {{ registrations|length }}</span>
+				<span class="stat-item">Today: {{ today_count }}</span>
+			</div>
+		</header>
+
+		<section class="controls">
+			<div class="search-box">
+				<input type="text" id="search-input" placeholder="Search by name, email, or course..." />
+			</div>
+			<div class="filters">
+				<select id="course-filter">
+					<option value="">All Courses</option>
+					<option value="btech-aids">B-Tech AIDS</option>
+					<option value="btech-ce">B-Tech CE</option>
+					<option value="mba-tech">MBA Tech</option>
+				</select>
+				<select id="year-filter">
+					<option value="">All Years</option>
+					<option value="1">1st Year</option>
+					<option value="2">2nd Year</option>
+					<option value="3">3rd Year</option>
+					<option value="4">4th Year</option>
+					<option value="5">5th Year</option>
+				</select>
+			</div>
+		</section>
+
+		<section class="card">
+			<div class="table-wrap">
+				<table id="registrations-table">
+					<thead>
+						<tr>
+							<th>#</th>
+							<th>Registration ID</th>
+							<th>Name</th>
+							<th>Email</th>
+							<th>Phone</th>
+							<th>Course</th>
+							<th>Year</th>
+							<th>Interests</th>
+							<th>Notes</th>
+							<th>Registered On</th>
+							<th>Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% if registrations %}
+							{% for reg in registrations %}
+							<tr data-course="{{ reg.course }}" data-year="{{ reg.year }}">
+								<td>{{ loop.index }}</td>
+								<td class="reg-id">{{ reg.id }}</td>
+								<td class="name">{{ reg.name }}</td>
+								<td class="email">{{ reg.email }}</td>
+								<td class="phone">{{ reg.phone }}</td>
+								<td class="course">{{ reg.course|title }}</td>
+								<td class="year">{{ reg.year }}</td>
+								<td class="interests">
+									{% if reg.interests %}
+										{% for interest in reg.interests %}
+											<span class="interest-tag">{{ interest|replace('-', ' ')|title }}</span>
+										{% endfor %}
+									{% else %}
+										<span class="no-interests">None</span>
+									{% endif %}
+								</td>
+								<td class="notes">{{ reg.notes or 'No notes' }}</td>
+								<td class="date">{{ reg.created_at.split('T')[0] }}</td>
+								<td class="actions">
+									<button class="btn-small view-btn" data-id="{{ reg.id }}">View</button>
+									<button class="btn-small delete-btn danger" data-id="{{ reg.id }}">Delete</button>
+								</td>
+							</tr>
+							{% endfor %}
+						{% else %}
+							<tr>
+								<td colspan="11" class="no-data">No registrations found</td>
+							</tr>
+						{% endif %}
+					</tbody>
+				</table>
+			</div>
+		</section>
+
+		<section class="export-section">
+			<h3>Export Data</h3>
+			<div class="export-buttons">
+				<a href="{{ url_for('export_csv') }}" class="btn export-btn">📊 Export to CSV</a>
+				<a href="{{ url_for('export_json') }}" class="btn export-btn">📄 Export to JSON</a>
+				<button id="clear-all" class="btn danger">🗑️ Clear All Registrations</button>
+			</div>
+		</section>
+	</main>
+
+	<!-- Registration Detail Modal -->
+	<div id="reg-modal" class="modal">
+		<div class="modal-content">
+			<span class="close">&times;</span>
+			<div id="modal-body"></div>
+		</div>
+	</div>
+
+	<script>
+		// Search functionality
+		const searchInput = document.getElementById('search-input');
+		const courseFilter = document.getElementById('course-filter');
+		const yearFilter = document.getElementById('year-filter');
+		const table = document.getElementById('registrations-table');
+
+		function filterTable() {
+			const searchTerm = searchInput.value.toLowerCase();
+			const courseValue = courseFilter.value;
+			const yearValue = yearFilter.value;
+			const rows = table.querySelectorAll('tbody tr');
+
+			rows.forEach(row => {
+				const name = row.querySelector('.name').textContent.toLowerCase();
+				const email = row.querySelector('.email').textContent.toLowerCase();
+				const course = row.dataset.course;
+				const year = row.dataset.year;
+
+				const matchesSearch = name.includes(searchTerm) || email.includes(searchTerm);
+				const matchesCourse = !courseValue || course === courseValue;
+				const matchesYear = !yearValue || year === yearValue;
+
+				row.style.display = matchesSearch && matchesCourse && matchesYear ? '' : 'none';
+			});
+		}
+
+		searchInput.addEventListener('input', filterTable);
+		courseFilter.addEventListener('change', filterTable);
+		yearFilter.addEventListener('change', filterTable);
+
+		// Delete functionality
+		document.querySelectorAll('.delete-btn').forEach(btn => {
+			btn.addEventListener('click', async () => {
+				const id = btn.dataset.id;
+				if (confirm(`Delete registration ${id}?`)) {
+					try {
+						const response = await fetch(`/api/registrations/${id}`, {
+							method: 'DELETE'
+						});
+						if (response.ok) {
+							btn.closest('tr').remove();
+							location.reload(); // Refresh to update counts
+						}
+					} catch (error) {
+						alert('Error deleting registration');
+					}
+				}
+			});
+		});
+
+		// Clear all functionality
+		document.getElementById('clear-all').addEventListener('click', async () => {
+			if (confirm('Clear ALL registrations? This cannot be undone!')) {
+				try {
+					const response = await fetch('/api/registrations/clear', {
+						method: 'DELETE'
+					});
+					if (response.ok) {
+						location.reload();
+					}
+				} catch (error) {
+					alert('Error clearing registrations');
+				}
+			}
+		});
+
+		// Modal functionality
+		const modal = document.getElementById('reg-modal');
+		const closeBtn = document.querySelector('.close');
+
+		closeBtn.onclick = () => modal.style.display = 'none';
+		window.onclick = (event) => {
+			if (event.target === modal) modal.style.display = 'none';
+		};
+
+		// View registration details
+		document.querySelectorAll('.view-btn').forEach(btn => {
+			btn.addEventListener('click', () => {
+				const row = btn.closest('tr');
+				const modalBody = document.getElementById('modal-body');
+				
+				modalBody.innerHTML = `
+					<h2>Registration Details</h2>
+					<div class="detail-grid">
+						<div class="detail-item">
+							<strong>ID:</strong> ${row.querySelector('.reg-id').textContent}
+						</div>
+						<div class="detail-item">
+							<strong>Name:</strong> ${row.querySelector('.name').textContent}
+						</div>
+						<div class="detail-item">
+							<strong>Email:</strong> ${row.querySelector('.email').textContent}
+						</div>
+						<div class="detail-item">
+							<strong>Phone:</strong> ${row.querySelector('.phone').textContent}
+						</div>
+						<div class="detail-item">
+							<strong>Course:</strong> ${row.querySelector('.course').textContent}
+						</div>
+						<div class="detail-item">
+							<strong>Year:</strong> ${row.querySelector('.year').textContent}
+						</div>
+						<div class="detail-item">
+							<strong>Interests:</strong> ${row.querySelector('.interests').innerHTML}
+						</div>
+						<div class="detail-item">
+							<strong>Notes:</strong> ${row.querySelector('.notes').textContent}
+						</div>
+						<div class="detail-item">
+							<strong>Registered:</strong> ${row.querySelector('.date').textContent}
+						</div>
+					</div>
+				`;
+				
+				modal.style.display = 'block';
+			});
+		});
+	</script>
+</body>
+</html> 

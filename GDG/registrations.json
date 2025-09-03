@@ -1,0 +1,15 @@
+[
+  {
+    "id": "id-20250904020151",
+    "name": "Krish Patel",
+    "email": "krishp0321@gmail.com",
+    "phone": "+919004613564",
+    "course": "btech-ce",
+    "year": "2",
+    "interests": [
+      "ai-ml"
+    ],
+    "notes": "",
+    "created_at": "2025-09-04T02:01:51.507927"
+  }
+]
