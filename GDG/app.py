@@ -29,7 +29,7 @@ except ImportError:
     # Event Details
     EVENT_CONFIG = {
         'name': 'GDG TechTalk Seminar',
-        'date': 'December 15, 2024',
+        'date': 'December 15, 2025',
         'time': '2:00 PM - 5:00 PM',
         'venue': 'GDG Innovation Center'
     }
@@ -142,7 +142,7 @@ def send_registration_email(registration_data):
                 
                 <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd;">
                     <p style="color: #666; margin: 0;">Questions? Contact us at <a href="mailto:events@gdg.com" style="color: #4285f4;">events@gdg.com</a></p>
-                    <p style="color: #666; margin: 5px 0 0 0;">© 2024 Google Developers Club. All rights reserved.</p>
+                    <p style="color: #666; margin: 5px 0 0 0;">© 2025 Google Developers Club. All rights reserved.</p>
                 </div>
             </div>
         </body>
