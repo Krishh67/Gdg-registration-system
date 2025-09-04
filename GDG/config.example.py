@@ -21,9 +21,3 @@ EVENT_CONFIG = {
     'venue': 'GDG Innovation Center'
 }
 
-# Instructions:
-# 1. Copy this file to 'config.py'
-# 2. Replace 'your-email@gmail.com' with your actual Gmail
-# 3. Replace 'your-app-password' with your 16-digit Gmail App Password
-# 4. Customize event details as needed
-# 5. Never commit config.py to version control! 
