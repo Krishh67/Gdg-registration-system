@@ -15,19 +15,26 @@ try:
     from config import EMAIL_CONFIG, EVENT_CONFIG
 except ImportError:
     # Fallback configuration if config.py doesn't exist
-    EMAIL_CONFIG = {
-        'smtp_server': 'smtp.gmail.com',
-        'smtp_port': 587,
-        'username': 'your-email@gmail.com',  # Replace with your Gmail
-        'password': 'your-app-password',     # Replace with your Gmail App Password
-        'from_email': 'your-email@gmail.com' # Replace with your Gmail
-    }
-    EVENT_CONFIG = {
-        'name': 'GDG TechTalk Seminar',
-        'date': 'December 15, 2024',
-        'time': '2:00 PM - 5:00 PM',
-        'venue': 'GDG Innovation Center'
-    }
+    
+import os
+
+EMAIL_CONFIG = {
+    'smtp_server': os.getenv('SMTP_SERVER', 'smtp.gmail.com'),
+    'smtp_port': int(os.getenv('SMTP_PORT', 587)),
+    'username': os.getenv('EMAIL_USER'),
+    'password': os.getenv('EMAIL_PASS'),
+    'from_email': os.getenv('FROM_EMAIL')
+}
+
+
+
+# Event Details
+EVENT_CONFIG = {
+    'name': 'GDG TechTalk Seminar',
+    'date': 'December 15, 2024',
+    'time': '2:00 PM - 5:00 PM',
+    'venue': 'GDG Innovation Center'
+}
 
 # Data storage file
 DATA_FILE = 'registrations.json'
